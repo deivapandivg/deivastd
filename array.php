@@ -99,7 +99,35 @@ echo $reversedString;
 //   });
 // });
 
+// $(document).ready(function() {
+//   $('#myForm').validate({
+//     rules: {
+//       dob: {
+//         required: true,
+//         validDOB: true
+//       }
+//     },
+//     messages: {
+//       dob: {
+//         required: "Please enter your Date of Birth",
+//         validDOB: "You must be at least 18 years old"
+//       }
+//     },
+//     submitHandler: function(form) {
+//       // Handle form submission
+//       form.submit();
+//     }
+//   });
 
+//   // Custom validation method for Date of Birth
+//   $.validator.addMethod("validDOB", function(value, element) {
+//     var today = new Date();
+//     var dob = new Date(value);
+//     var eighteenYearsAgo = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate());
+
+//     return dob <= eighteenYearsAgo;
+//   });
+// });
 
 
 
