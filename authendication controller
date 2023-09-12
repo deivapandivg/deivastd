@@ -1,0 +1,84 @@
+<?php
+
+namespace App\Http\Controllers\Auth;
+
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Auth\LoginRequest;
+use App\Providers\RouteServiceProvider;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\View\View;
+use DB;
+
+
+class AuthenticatedSessionController extends Controller
+{
+    /**
+     * Display the login view.
+     */
+    public function create(): View
+    {
+        return view('auth.login');
+    }
+
+    /**
+     * Handle an incoming authentication request.
+     */
+    public function store(LoginRequest $request): RedirectResponse
+    {
+        $request->authenticate();
+
+        $get_username= DB::connection('mysql_second')->table('ldap_test')->where('username', $request->username)->exists();
+        $get_user= DB::table('users')->where('username',$request->username)->exists();
+
+        if($get_user==true && $get_username==true){
+
+            // RateLimiter::clear($request->throttleKey());
+
+             $request->session()->regenerate();
+
+             return redirect()->intended(RouteServiceProvider::HOME);
+        }
+
+        else{
+
+            // dd($get_username);
+            Auth::logout();
+            Session::put('is_ldap_false_user',true);
+
+            // if(isset(Session::get('is_ldap_false_user')) && Session::get('is_ldap_false_user')==true){
+            //     return redirect to new_form;
+
+            // }else
+            // {
+
+            // }
+
+            return redirect()->route('new_form');
+         }
+
+         // else{
+         //     RateLimiter::clear($request->throttleKey());
+
+         //     $request->session()->regenerate();
+
+         //     return redirect()->intended(RouteServiceProvider::HOME);
+         // }
+        
+    }
+
+    /**
+     * Destroy an authenticated session.
+     */
+    public function destroy(Request $request): RedirectResponse
+    {
+        Auth::guard('web')->logout();
+
+        $request->session()->invalidate();
+
+        $request->session()->regenerateToken();
+
+        return redirect('/');
+    }
+}
